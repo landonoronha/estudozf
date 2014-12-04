@@ -1,6 +1,7 @@
 <div class="topo-table">
-    <a class="btn btn-success" title="Novo"><span class="glyphicon glyphicon-plus"></span></a>
-
+    <!--<a class="btn btn-success" title="Novo"><span class="glyphicon glyphicon-plus"></span></a>
+    -->
+    <a href="<?php echo $this->url('contatos', array('action' => 'novo'))?>" class="btn btn-success" title="Novo"><span class="glyphicon glyphicon-plus"></span></a>
     <div class="btn-group" title="Quantidades por Página">
         <button type="button" class="btn btn-default">005</button>
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -48,9 +49,9 @@
                     <td class="text-center">2</td>
                     <td><?php echo $this->dateFormat(new DateTime(), IntlDateFormatter::SHORT); ?></td>
                     <td>
-                        <a class="btn btn-xs btn-info" title="Visualizar" href=""><span class="glyphicon glyphicon-new-window"></span></a>
-                        <a class="btn btn-xs btn-warning" title="Editar" href=""><span class="glyphicon glyphicon-edit"></span></a>
-                        <a class="btn btn-xs btn-danger" title="Deletar" href=""><span class="glyphicon glyphicon-floppy-remove"></span></a>
+                        <a class="btn btn-xs btn-info" title="Visualizar" href="<?php echo $this->url('contatos', array("action" => "detalhes", "id" => $i,)); ?>"><span class="glyphicon glyphicon-new-window"></span></a>
+                        <a class="btn btn-xs btn-warning" title="Editar" href="<?php echo $this->url('contatos', array("action" => "editar", "id" => $i,)); ?>"><span class="glyphicon glyphicon-edit"></span></a>
+                        <a class="btn btn-xs btn-danger" title="Deletar" href="<?php echo $this->url('contatos', array("action" => "deletar", "id" => $i,)); ?>"><span class="glyphicon glyphicon-floppy-remove"></span></a>
                     </td>
                 </tr>
             <?php endfor; ?>
@@ -68,3 +69,25 @@
     <?php echo $this->url('sobre') ?>
     <a class="btn btn-primary" href="<?php echo $this->url('contato') ?>/sobre">Sobre</a>
 </div>
+
+<?php $this->headScript()->captureStart(); ?>
+$(function(){
+    // variável para conter a url deletar
+    var url_deletar     = '<?php echo $this->url('contatos', array("action" => "deletar")); ?>' + '/';
+
+    // qualquer link que tiver a url deletar vai sofrer um evento quando for clicada
+    $("a[href*='" + url_deletar + "']").click(function (event) {
+        // variável contendo o id referente ao botão clicado
+        var contato_id  = $(this).attr('href').split(url_deletar).pop();
+        // variável contendo mensagem da janela
+        var mensagem = "Deseja realmente apagar o contato de ID " + contato_id + "?";
+        // variável com resposta da mensagem colocada na janela
+        var confirmacao = confirm(mensagem);
+
+        // se a confirmação for false o fluxo é interrompido
+        if (!confirmacao)
+            // elimar o evendo do botão clicado
+            event.preventDefault();
+    });
+});
+<?php $this->headScript()->captureEnd(); ?>

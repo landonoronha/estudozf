@@ -15,4 +15,8 @@ class HomeController extends AbstractActionController
             'exemplo' => $texto,
         ));
     }
+    public function sobreAction()
+    {
+        return new ViewModel();
+    }
 }

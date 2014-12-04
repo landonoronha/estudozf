@@ -4,6 +4,8 @@ namespace Contato;
  
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
+use Contato\View\Helper\MenuAtivo;
+use Contato\View\Helper\Message;
  
 class Module
 {
@@ -29,4 +31,29 @@ class Module
             ),
         );
     }
-}
+  /**
+     * Register View Helper
+     */
+    
+    
+    public function getViewHelperConfig()
+    {
+        return array(
+ 
+            'invokables' => array (
+                    'formataCPF' => new View\Helper\FormataCPF()
+ ),
+                # registrar View Helper com injecao de dependecia
+            # registrar View Helper com injecao de dependecia
+            'factories' => array(
+                'menuAtivo'  => function($sm) {
+                    return new MenuAtivo($sm->getServiceLocator()->get('Request'));
+                },
+                'message' => function($sm) {
+                return new Message($sm->getServiceLocator()->get('ControllerPluginManager')->get('flashmessenger'));
+            },        
+            ),
+        );
+    }
+    
+    }
