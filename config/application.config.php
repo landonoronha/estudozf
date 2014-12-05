@@ -8,7 +8,9 @@
 return array(
     'modules' => array(
         'Album',
-        'Contato'
+        'Contato',
+        'ZendDeveloperTools',
+        'BjyProfiler'
     ),
     'module_listener_options' => array(
         'module_paths' => array(

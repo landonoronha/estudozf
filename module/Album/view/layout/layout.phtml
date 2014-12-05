@@ -43,13 +43,18 @@
         <?php
         $url_home   = $this->url('contato');
         $url_sobre  = $this->url('sobre');
+        $url_contatos  = $this->url('contatos');
         ?>
         <li <?php echo $this->menuAtivo($url_home); ?>>
             <a href="<?php echo $url_home; ?>">Início</a>
         </li>
+        <li <?php echo $this->menuAtivo($url_contatos); ?>>
+            <a href="<?php echo $url_contatos; ?>">Contatos</a>
+        </li>
         <li <?php echo $this->menuAtivo($url_sobre); ?>>
             <a href="<?php echo $url_sobre; ?>">Sobre</a>
         </li>
+        
                 
                 </ul>
                 <h3 class="text-muted"><?php echo $NAME_APPLICATION; ?></h3>

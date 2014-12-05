@@ -6,6 +6,13 @@ use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Contato\View\Helper\MenuAtivo;
 use Contato\View\Helper\Message;
+// import ModelContato
+use Contato\Model\Contato,
+    Contato\Model\ContatoTable;
+
+// import ZendDb
+use Zend\Db\ResultSet\ResultSet,
+    Zend\Db\TableGateway\TableGateway;
  
 class Module
 {
@@ -31,6 +38,32 @@ class Module
             ),
         );
     }
+    
+    /**
+ * Register Services
+ */
+public function getServiceConfig()
+{
+    return array(
+        'factories' => array(
+            'ContatoTableGateway' => function ($sm) {
+                // obter adapter db atraves do service manager
+                $adapter = $sm->get('Zend\Db\Adapter\Adapter');//AdapterDb');
+
+                // configurar ResultSet com nosso model Contato
+                $resultSetPrototype = new ResultSet();
+                $resultSetPrototype->setArrayObjectPrototype(new Contato());
+
+                // return TableGateway configurado para nosso model Contato
+                return new TableGateway('contatos', $adapter, null, $resultSetPrototype);
+            },
+                'ModelContato' => function ($sm) {
+                // return instacia Model ContatoTable
+                return new ContatoTable($sm->get('ContatoTableGateway'));
+            }
+        )
+    );
+}
   /**
      * Register View Helper
      */

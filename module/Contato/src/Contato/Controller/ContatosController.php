@@ -4,19 +4,32 @@ namespace Contato\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 
+// import ZendView
+use Zend\View\Model\ViewModel;
+ 
+// imort ModelContatoTable com alias
+//use Contato\Model\ContatoTable as ModelContato;
+
 class ContatosController extends AbstractActionController
 {
+    protected $contatoTable;
     // GET /contatos
     public function indexAction()
     {
+    // localizar adapter do banco
+    //$adapter = $this->getServiceLocator()->get('AdapterDb');
+  // model ContatoTable instanciado
+    //$modelContato = new ModelContato($adapter); // alias para ContatoTable
+ // enviar para view o array com key contatos e value com todos os contatos
+    return new ViewModel(array('contatos' => $this->getContatoTable()->fetchAll()));
+    // enviar para view o array com key contatos e value com todos os contatos
+    //return new ViewModel(array('contatos' => $modelContato->fetchAll()));
     }
 
     // GET /contatos/novo
     public function novoAction()
     {
     }
-
-    // POST /contatos/adicionar
 // POST /contatos/adicionar
 public function adicionarAction()
 {
@@ -52,7 +65,7 @@ public function adicionarAction()
     // GET /contatos/detalhes/id
 public function detalhesAction()
 {
-    // filtra id passsado pela url
+  // filtra id passsado pela url
     $id = (int) $this->params()->fromRoute('id', 0);
 
     // se id = 0 ou não informado redirecione para contatos
@@ -68,19 +81,27 @@ public function detalhesAction()
     // 1 - solicitar serviço para pegar o model responsável pelo find
     // 2 - solicitar form com dados desse contato encontrado
     // formulário com dados preenchidos
-    $form = array(
-        'nome' => 'Igor Rocha',
-        "telefone_principal" => "(085) 8585-8585",
-        "telefone_secundario" => "(085) 8585-8585",
-        "data_criacao" => "02/03/2013",
-        "data_atualizacao" => "02/03/2013",
-    );
+//        $form = array(
+//            'nome' => 'Igor Rocha',
+//            "telefone_principal" => "(085) 8585-8585",
+//            "telefone_secundario" => "(085) 8585-8585",
+//            "data_criacao" => "02/03/2013",
+//            "data_atualizacao" => "02/03/2013",
+//        );
+    try {
+        $form = $this->getContatoTable()->find($id);
+    } catch (Exception $exc) {
+        // adicionar mensagem
+        $this->flashMessenger()->addErrorMessage($exc->getMessage());
+
+        // redirecionar para action index
+        return $this->redirect()->toRoute('contatos');
+    }
 
     // dados eviados para detalhes.phtml
-    return array('id' => $id, 'form' => $form);
+    return array('contato' => $form);
 }
 
-    // GET /contatos/editar/id
 // GET /contatos/editar/id
 public function editarAction()
 {
@@ -99,18 +120,25 @@ public function editarAction()
     // aqui vai a lógica para pegar os dados referente ao contato
     // 1 - solicitar serviço para pegar o model responsável pelo find
     // 2 - solicitar form com dados desse contato encontrado
-
     // formulário com dados preenchidos
-    $form = array(
-        'nome'                  => 'Igor Rocha',
-        "telefone_principal"    => "(085) 8585-8585",
-        "telefone_secundario"   => "(085) 8585-8585",
-    );
+//        $form = array(
+//            'nome'                  => 'Igor Rocha',
+//            "telefone_principal"    => "(085) 8585-8585",
+//            "telefone_secundario"   => "(085) 8585-8585",
+//        );
+    try {
+        $form = (array) $this->getContatoTable()->find($id);
+    } catch (Exception $exc) {
+        // adicionar mensagem
+        $this->flashMessenger()->addErrorMessage($exc->getMessage());
+
+        // redirecionar para action index
+        return $this->redirect()->toRoute('contatos');
+    }
 
     // dados eviados para editar.phtml
     return array('id' => $id, 'form' => $form);
 }
-
  // PUT /contatos/editar/id
 public function atualizarAction()
 {
@@ -168,4 +196,26 @@ public function deletarAction()
     // redirecionar para action index
     return $this->redirect()->toRoute('contatos');
 }
+
+/**
+ * Metodo privado para obter instacia do Model ContatoTable
+ *
+ * @return ContatoModelContatoTable
+ */
+private function getContatoTable()
+{
+  // obter instacia tableGateway configurada
+   // $tableGateway = $this->getServiceLocator()->get('ContatoTableGateway');
+ 
+    // return model ContatoTable
+    //return new ModelContato($tableGateway); // alias para ContatoTable
+//return $this->getServiceLocator()->get('ModelContato');
+   
+// adicionar service ModelContato a variavel de classe
+        if (!$this->contatoTable)
+            $this->contatoTable = $this->getServiceLocator()->get('ModelContato');
+
+        // return vairavel de classe com service ModelContato
+        return $this->contatoTable;  
+}   
 }
